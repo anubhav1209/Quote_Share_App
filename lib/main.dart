@@ -5,12 +5,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'providers/user_provider.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/main_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -24,10 +26,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Suvichar',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.deepPurple,
-          useMaterial3: true,
-        ),
+        theme: ThemeData(primarySwatch: Colors.deepPurple, useMaterial3: true),
         home: const AppInitializer(),
       ),
     );
@@ -48,7 +47,8 @@ class AppInitializer extends StatelessWidget {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 // Check if user is authenticated AND has completed onboarding
-                if (userProvider.isAuthenticated && userProvider.user.isOnboardingComplete) {
+                if (userProvider.isAuthenticated &&
+                    userProvider.user.isOnboardingComplete) {
                   return const MainScreen();
                 } else {
                   return const WelcomeScreen();
@@ -56,9 +56,7 @@ class AppInitializer extends StatelessWidget {
               }
               return const Scaffold(
                 body: Center(
-                  child: CircularProgressIndicator(
-                    color: Color(0xFF6A1B9A),
-                  ),
+                  child: CircularProgressIndicator(color: Color(0xFF6A1B9A)),
                 ),
               );
             },
@@ -66,7 +64,8 @@ class AppInitializer extends StatelessWidget {
         }
 
         // Check if user is authenticated AND has completed onboarding
-        if (userProvider.isAuthenticated && userProvider.user.isOnboardingComplete) {
+        if (userProvider.isAuthenticated &&
+            userProvider.user.isOnboardingComplete) {
           return const MainScreen();
         } else {
           return const WelcomeScreen();

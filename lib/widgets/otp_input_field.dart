@@ -5,11 +5,7 @@ class OtpInputField extends StatefulWidget {
   final Function(String) onCompleted;
   final int length;
 
-  const OtpInputField({
-    super.key,
-    required this.onCompleted,
-    this.length = 6,
-  });
+  const OtpInputField({super.key, required this.onCompleted, this.length = 6});
 
   @override
   State<OtpInputField> createState() => _OtpInputFieldState();
@@ -69,10 +65,7 @@ class _OtpInputFieldState extends State<OtpInputField> {
             textAlign: TextAlign.center,
             keyboardType: TextInputType.number,
             maxLength: 1,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             decoration: InputDecoration(
               counterText: '',
               border: OutlineInputBorder(
@@ -86,9 +79,7 @@ class _OtpInputFieldState extends State<OtpInputField> {
                 ),
               ),
             ),
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-            ],
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             onChanged: (value) => _onChanged(value, index),
             onTap: () {
               // Clear on tap for better UX

@@ -14,12 +14,26 @@ class PermissionService {
   // Request storage permission
   Future<bool> requestStoragePermission() async {
     if (Platform.isAndroid) {
-      final status = await Permission.storage.request();
-      if (status.isPermanentlyDenied) {
-        await openAppSettings();
-        return false;
+      // Check if already granted
+      if (await Permission.storage.isGranted || await Permission.photos.isGranted) {
+        return true;
       }
-      return status.isGranted;
+
+      // Request both permissions (covers Android < 13 and 13+)
+      final statuses = await [
+        Permission.storage,
+        Permission.photos,
+      ].request();
+
+      if (statuses[Permission.storage]!.isGranted || statuses[Permission.photos]!.isGranted) {
+        return true;
+      }
+
+      // Handle permanently denied
+      if (statuses[Permission.storage]!.isPermanentlyDenied || statuses[Permission.photos]!.isPermanentlyDenied) {
+        await openAppSettings();
+      }
+      return false;
     }
     return true; // iOS handles automatically
   }

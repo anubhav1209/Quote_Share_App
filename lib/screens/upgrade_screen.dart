@@ -92,10 +92,7 @@ class UpgradeScreen extends StatelessWidget {
                     ),
                     Text(
                       period,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                     ),
                   ],
                 ),
@@ -103,10 +100,7 @@ class UpgradeScreen extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                   ),
                 ],
               ],
@@ -183,10 +177,7 @@ class UpgradeScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   const Text(
                     'Get unlimited access to all features',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 16,
-                    ),
+                    style: TextStyle(color: Colors.white70, fontSize: 16),
                   ),
                 ],
               ),
@@ -200,10 +191,7 @@ class UpgradeScreen extends StatelessWidget {
                   // Plan cards
                   const Text(
                     'Choose Your Plan',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
 
@@ -228,10 +216,7 @@ class UpgradeScreen extends StatelessWidget {
                   // Premium features
                   const Text(
                     'Premium Features',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 12),
 
@@ -247,16 +232,16 @@ class UpgradeScreen extends StatelessWidget {
                   // Free version features
                   const Text(
                     'Free Version',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 12),
 
                   _buildFeatureItem('Basic quote templates', isLocked: true),
                   _buildFeatureItem('Name & photo overlay', isLocked: false),
-                  _buildFeatureItem('Limited downloads (5/day)', isLocked: true),
+                  _buildFeatureItem(
+                    'Limited downloads (5/day)',
+                    isLocked: true,
+                  ),
                   _buildFeatureItem('Contains watermark', isLocked: true),
                 ],
               ),

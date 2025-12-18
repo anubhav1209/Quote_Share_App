@@ -52,60 +52,47 @@ class _PurposeSelectionScreenState extends State<PurposeSelectionScreen> {
         ),
       ),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Text(
                 'Choose Your Purpose',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
               Text(
                 'Select how you\'ll use Suvichar',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
               ),
               const SizedBox(height: 40),
 
               // Purpose Cards
-              Expanded(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: PurposeCard(
-                        icon: Icons.person,
-                        title: 'PERSONAL',
-                        description: 'Share quotes with friends and family',
-                        isSelected: _selectedType == AccountType.personal,
-                        onTap: () => setState(() => _selectedType = AccountType.personal),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Expanded(
-                      child: PurposeCard(
-                        icon: Icons.business,
-                        title: 'BUSINESS',
-                        description: 'Promote your brand with custom quotes',
-                        isSelected: _selectedType == AccountType.business,
-                        onTap: () => setState(() => _selectedType = AccountType.business),
-                      ),
-                    ),
-                  ],
+              PurposeCard(
+                icon: Icons.person,
+                title: 'PERSONAL',
+                description: 'Share quotes with friends and family',
+                isSelected: _selectedType == AccountType.personal,
+                onTap: () => setState(
+                  () => _selectedType = AccountType.personal,
+                ),
+              ),
+              const SizedBox(height: 20),
+              PurposeCard(
+                icon: Icons.business,
+                title: 'BUSINESS',
+                description: 'Promote your brand with custom quotes',
+                isSelected: _selectedType == AccountType.business,
+                onTap: () => setState(
+                  () => _selectedType = AccountType.business,
                 ),
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 40),
 
               // Continue Button
               SizedBox(
-                width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
                   onPressed: _handleContinue,
@@ -118,13 +105,11 @@ class _PurposeSelectionScreenState extends State<PurposeSelectionScreen> {
                   ),
                   child: const Text(
                     'Continue',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
+               const SizedBox(height: 24),
             ],
           ),
         ),

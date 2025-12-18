@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import '../providers/user_provider.dart';
 import '../models/user_model.dart';
@@ -10,10 +11,7 @@ import 'main_screen.dart';
 class ProfileSetupScreen extends StatefulWidget {
   final AccountType accountType;
 
-  const ProfileSetupScreen({
-    super.key,
-    required this.accountType,
-  });
+  const ProfileSetupScreen({super.key, required this.accountType});
 
   @override
   State<ProfileSetupScreen> createState() => _ProfileSetupScreenState();
@@ -40,7 +38,18 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   Future<void> _pickPhoto(ImageSource source) async {
     final file = await _permissionService.pickImage(source);
     if (file != null) {
-      setState(() => _photoPath = file.path);
+      // Save to permanent storage
+      try {
+        final appDir = await getApplicationDocumentsDirectory();
+        final fileName = 'profile_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        final savedImage = await file.copy('${appDir.path}/$fileName');
+        
+        setState(() => _photoPath = savedImage.path);
+      } catch (e) {
+        debugPrint('Error saving profile photo: $e');
+        // Fallback to temp path if copy fails
+        setState(() => _photoPath = file.path);
+      }
     }
   }
 
@@ -142,10 +151,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
             onPressed: _handleSkip,
             child: const Text(
               'Skip',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
+              style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
           ),
         ],
@@ -166,10 +172,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               const SizedBox(height: 12),
               Text(
                 'Add your details to personalize your quotes',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
               ),
               const SizedBox(height: 40),
 
@@ -182,7 +185,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                       CircleAvatar(
                         radius: 70,
                         backgroundColor: Colors.grey[200],
-                        backgroundImage: _photoPath != null && File(_photoPath!).existsSync()
+                        backgroundImage:
+                            _photoPath != null && File(_photoPath!).existsSync()
                             ? FileImage(File(_photoPath!))
                             : null,
                         child: _photoPath == null
@@ -217,10 +221,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               Center(
                 child: Text(
                   _photoLabel,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 ),
               ),
               const SizedBox(height: 40),

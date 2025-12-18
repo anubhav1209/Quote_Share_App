@@ -51,7 +51,7 @@ class UserModel {
       phone: json['phone'] ?? '',
       photoPath: json['photoPath'],
       showDate: json['showDate'] ?? true,
-      accountType: json['accountType'] != null 
+      accountType: json['accountType'] != null
           ? AccountType.fromJson(json['accountType'])
           : AccountType.personal,
       isOnboardingComplete: json['isOnboardingComplete'] ?? false,

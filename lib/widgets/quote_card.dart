@@ -83,11 +83,7 @@ class QuoteCard extends StatelessWidget {
 
           // Date badge (top-left)
           if (showDate)
-            Positioned(
-              left: 16,
-              top: 16,
-              child: DateBadge(date: date),
-            ),
+            Positioned(left: 16, top: 16, child: DateBadge(date: date)),
 
           // User photo (bottom-left with glow)
           if (userName.isNotEmpty)
@@ -97,13 +93,13 @@ class QuoteCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  GlowingAvatar(
-                    imagePath: userPhotoPath,
-                    size: 64,
-                  ),
+                  GlowingAvatar(imagePath: userPhotoPath, size: 64),
                   const SizedBox(height: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.black26,
                       borderRadius: BorderRadius.circular(12),
@@ -126,10 +122,7 @@ class QuoteCard extends StatelessWidget {
 
     // Wrap with RepaintBoundary if key is provided (for image capture)
     if (repaintKey != null) {
-      return RepaintBoundary(
-        key: repaintKey,
-        child: quoteWidget,
-      );
+      return RepaintBoundary(key: repaintKey, child: quoteWidget);
     }
 
     return quoteWidget;
