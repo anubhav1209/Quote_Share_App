@@ -29,8 +29,8 @@ A premium Flutter application for creating, customizing, and sharing beautiful d
 
 1.  **Clone the repository**
     ```bash
-    git clone https://github.com/Start-Tworks/Suvichar-App.git
-    cd Suvichar-App
+    git clone https://github.com/anubhav1209/Quote_Share_App.git
+    cd Quote_Share_App
     ```
 
 2.  **Install dependencies**
