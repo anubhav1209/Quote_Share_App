@@ -36,9 +36,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => OtpVerificationScreen(
-          phoneNumber: '+91${_phoneController.text}',
-        ),
+        builder: (_) =>
+            OtpVerificationScreen(phoneNumber: '+91${_phoneController.text}'),
       ),
     ).then((_) {
       if (mounted) {
@@ -72,7 +71,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     color: Colors.white,
                   ),
                   const SizedBox(height: 24),
-                  
+
                   // App title
                   const Text(
                     'Suvichar',
@@ -86,10 +85,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   const Text(
                     'Create & Share Personalized Quotes',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 18,
-                    ),
+                    style: TextStyle(color: Colors.white70, fontSize: 18),
                   ),
                   const SizedBox(height: 60),
 
@@ -126,7 +122,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           ),
                         ),
                         const SizedBox(height: 24),
-                        
+
                         // Phone input with +91 prefix
                         Row(
                           children: [
@@ -217,7 +213,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ),
 
                   const SizedBox(height: 40),
-                  
+
                   // Author Credit
                   const Text(
                     'Developed by ANUBHAV KUMAR',

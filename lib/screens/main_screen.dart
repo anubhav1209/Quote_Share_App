@@ -19,7 +19,7 @@ class _MainScreenState extends State<MainScreen> {
   final GlobalKey _repaintKey = GlobalKey();
   final _imageService = ImageOverlayService();
   final _shareService = ShareService();
-  
+
   int _currentIndex = 0;
   bool _isProcessing = false;
   String _selectedCategory = 'All';
@@ -68,15 +68,27 @@ class _MainScreenState extends State<MainScreen> {
     if (_selectedCategory == 'All') return _allQuotes;
     // For demo purposes, if category doesn't match exactly, show random subset or all to ensure content displays
     // In real app, you would filter: return _allQuotes.where((q) => q['category'] == _selectedCategory).toList();
-    
+
     // Since we only have 5 templates, we'll just rotate them or show specific ones for demo
-    return _allQuotes; 
+    return _allQuotes;
   }
 
   String _getCurrentDate() {
     final now = DateTime.now();
-    final months = ['जनवरी', 'फरवरी', 'मार्च', 'अप्रैल', 'मई', 'जून',
-                    'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'];
+    final months = [
+      'जनवरी',
+      'फरवरी',
+      'मार्च',
+      'अप्रैल',
+      'मई',
+      'जून',
+      'जुलाई',
+      'अगस्त',
+      'सितंबर',
+      'अक्टूबर',
+      'नवंबर',
+      'दिसंबर',
+    ];
     return '${now.day} ${months[now.month - 1]}';
   }
 
@@ -93,9 +105,9 @@ class _MainScreenState extends State<MainScreen> {
       await _shareService.shareQuote(imageFile);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to share: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to share: $e')));
       }
     } finally {
       if (mounted) {
@@ -113,22 +125,23 @@ class _MainScreenState extends State<MainScreen> {
         repaintBoundaryKey: _repaintKey,
       );
 
-      // Save to permanent storage
+      // Save to permanent storage (gallery + local)
       await _imageService.saveQuoteToPermanentStorage(imageFile);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Quote saved successfully!'),
+            content: Text('Quote saved to gallery successfully!'),
             backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
           ),
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to download: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to download: $e')));
       }
     } finally {
       if (mounted) {
@@ -167,7 +180,9 @@ class _MainScreenState extends State<MainScreen> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
                 side: BorderSide(
-                  color: isSelected ? const Color(0xFF6A1B9A) : Colors.transparent,
+                  color: isSelected
+                      ? const Color(0xFF6A1B9A)
+                      : Colors.transparent,
                 ),
               ),
             ),

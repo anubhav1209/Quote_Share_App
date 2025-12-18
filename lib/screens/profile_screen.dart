@@ -1,13 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:path_provider/path_provider.dart';
 import '../providers/user_provider.dart';
 import '../models/user_model.dart';
 import 'edit_screen.dart';
 import 'welcome_screen.dart';
 import 'dart:io';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  Future<List<File>> _loadSavedQuotes() async {
+    try {
+      final appDir = await getApplicationDocumentsDirectory();
+      final quotesDir = Directory('${appDir.path}/saved_quotes');
+
+      if (!await quotesDir.exists()) {
+        return [];
+      }
+
+      final files = quotesDir
+          .listSync()
+          .where((item) => item is File && item.path.endsWith('.png'))
+          .map((item) => item as File)
+          .toList();
+
+      // Sort by recent first
+      files.sort(
+        (a, b) => b.statSync().modified.compareTo(a.statSync().modified),
+      );
+
+      return files;
+    } catch (e) {
+      return [];
+    }
+  }
 
   void _handleLogout(BuildContext context) {
     showDialog(
@@ -22,9 +54,12 @@ class ProfileScreen extends StatelessWidget {
           ),
           TextButton(
             onPressed: () async {
-              final userProvider = Provider.of<UserProvider>(context, listen: false);
+              final userProvider = Provider.of<UserProvider>(
+                context,
+                listen: false,
+              );
               await userProvider.signOut();
-              
+
               if (context.mounted) {
                 Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(builder: (_) => const WelcomeScreen()),
@@ -32,10 +67,7 @@ class ProfileScreen extends StatelessWidget {
                 );
               }
             },
-            child: const Text(
-              'Logout',
-              style: TextStyle(color: Colors.red),
-            ),
+            child: const Text('Logout', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -72,12 +104,17 @@ class ProfileScreen extends StatelessWidget {
                   CircleAvatar(
                     radius: 60,
                     backgroundColor: Colors.white,
-                    backgroundImage: user.photoPath != null && 
-                        File(user.photoPath!).existsSync()
+                    backgroundImage:
+                        user.photoPath != null &&
+                            File(user.photoPath!).existsSync()
                         ? FileImage(File(user.photoPath!))
                         : null,
                     child: user.photoPath == null
-                        ? const Icon(Icons.person, size: 60, color: Color(0xFF6A1B9A))
+                        ? const Icon(
+                            Icons.person,
+                            size: 60,
+                            color: Color(0xFF6A1B9A),
+                          )
                         : null,
                   ),
                   const SizedBox(height: 16),
@@ -92,15 +129,15 @@ class ProfileScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     user.phone,
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 16,
-                    ),
+                    style: const TextStyle(color: Colors.white70, fontSize: 16),
                   ),
                   const SizedBox(height: 12),
                   // Account type badge
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(20),
@@ -109,16 +146,16 @@ class ProfileScreen extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          user.accountType == AccountType.personal 
-                              ? Icons.person 
+                          user.accountType == AccountType.personal
+                              ? Icons.person
                               : Icons.business,
                           color: Colors.white,
                           size: 16,
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          user.accountType == AccountType.personal 
-                              ? 'Personal' 
+                          user.accountType == AccountType.personal
+                              ? 'Personal'
                               : 'Business',
                           style: const TextStyle(
                             color: Colors.white,
@@ -174,7 +211,7 @@ class ProfileScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text(
@@ -187,46 +224,90 @@ class ProfileScreen extends StatelessWidget {
                       // Secret verification button
                       GestureDetector(
                         onDoubleTap: () => _showVerificationDialog(context),
-                        child: const Icon(Icons.verified_user_outlined, color: Colors.grey, size: 20),
+                        child: const Icon(
+                          Icons.verified_user_outlined,
+                          color: Colors.grey,
+                          size: 20,
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
 
-                  // Mock empty state
-                  Center(
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.image,
-                          size: 80,
-                          color: Colors.grey[400],
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No quotes downloaded yet',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey[600],
+                  // Load and display saved quotes
+                  FutureBuilder<List<File>>(
+                    future: _loadSavedQuotes(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            color: Color(0xFF6A1B9A),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Download quotes from the main screen',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[500],
+                        );
+                      }
+
+                      final savedQuotes = snapshot.data ?? [];
+
+                      if (savedQuotes.isEmpty) {
+                        return Center(
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.image,
+                                size: 80,
+                                color: Colors.grey[400],
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'No quotes downloaded yet',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Download quotes from the main screen',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[500],
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
+                        );
+                      }
+
+                      // Display saved quotes in a grid
+                      return GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 12,
+                              mainAxisSpacing: 12,
+                              childAspectRatio: 0.8,
+                            ),
+                        itemCount: savedQuotes.length > 6
+                            ? 6
+                            : savedQuotes.length,
+                        itemBuilder: (context, index) {
+                          final file = savedQuotes[index];
+                          return ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.file(file, fit: BoxFit.cover),
+                          );
+                        },
+                      );
+                    },
                   ),
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 40),
-            
+
             // App Footer
             Padding(
               padding: const EdgeInsets.only(bottom: 24),

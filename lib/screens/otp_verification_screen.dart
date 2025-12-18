@@ -9,10 +9,7 @@ import 'purpose_selection_screen.dart';
 class OtpVerificationScreen extends StatefulWidget {
   final String phoneNumber;
 
-  const OtpVerificationScreen({
-    super.key,
-    required this.phoneNumber,
-  });
+  const OtpVerificationScreen({super.key, required this.phoneNumber});
 
   @override
   State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
@@ -52,11 +49,11 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
   Future<void> _resendOtp() async {
     setState(() => _isVerifying = true);
-    
+
     try {
       await _authService.sendOTP(widget.phoneNumber);
       _startTimer();
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -85,8 +82,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     setState(() => _isVerifying = true);
 
     try {
-      final success = await _authService.verifyOTP(otp);
-      
+      final success = await _authService.verifyOTP(otp, widget.phoneNumber);
+
       if (success && mounted) {
         // Update user provider
         final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -141,25 +138,17 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
             children: [
               const Text(
                 'Verify OTP',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
               Text(
                 'Enter the 6-digit code sent to\n${widget.phoneNumber}',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
               ),
               const SizedBox(height: 40),
 
               // OTP Input
-              OtpInputField(
-                onCompleted: _verifyOtp,
-              ),
+              OtpInputField(onCompleted: _verifyOtp),
 
               const SizedBox(height: 32),
 
@@ -168,10 +157,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 child: _secondsRemaining > 0
                     ? Text(
                         'Resend OTP in $_secondsRemaining seconds',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                       )
                     : TextButton(
                         onPressed: _isVerifying ? null : _resendOtp,
@@ -194,10 +180,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   onPressed: () => Navigator.pop(context),
                   child: const Text(
                     'Change Phone Number',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                 ),
               ),
@@ -209,16 +192,11 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 const Center(
                   child: Column(
                     children: [
-                      CircularProgressIndicator(
-                        color: Color(0xFF6A1B9A),
-                      ),
+                      CircularProgressIndicator(color: Color(0xFF6A1B9A)),
                       SizedBox(height: 16),
                       Text(
                         'Verifying...',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
                       ),
                     ],
                   ),

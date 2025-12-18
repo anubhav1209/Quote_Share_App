@@ -5,10 +5,9 @@ class ShareService {
   // Share quote image
   Future<void> shareQuote(File imageFile, {String? text}) async {
     try {
-      await Share.shareXFiles(
-        [XFile(imageFile.path)],
-        text: text ?? 'Check out this personalized quote!',
-      );
+      await Share.shareXFiles([
+        XFile(imageFile.path),
+      ], text: text ?? 'Check out this personalized quote!');
     } catch (e) {
       throw Exception('Failed to share quote: $e');
     }

@@ -2,32 +2,85 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../models/user_model.dart';
+import '../services/auth_service.dart';
+import '../services/firestore_service.dart';
 
 class UserProvider extends ChangeNotifier {
+  final AuthService _authService = AuthService();
+  final FirestoreService _firestoreService = FirestoreService();
+
   UserModel _user = UserModel(name: '', phone: '');
   bool _isAuthenticated = false;
 
   UserModel get user => _user;
   bool get isAuthenticated => _isAuthenticated;
+  String? get userId => _authService.currentUserId;
 
-  // Initialize user data from local storage
+  // Initialize user data from Firestore or local storage
   Future<void> loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
-    final userJson = prefs.getString('user_data');
+    final userId = prefs.getString('user_id');
+    final userPhone = prefs.getString('user_phone');
     final isAuth = prefs.getBool('is_authenticated') ?? false;
 
-    if (userJson != null) {
-      _user = UserModel.fromJson(json.decode(userJson));
+    if (userId != null && userPhone != null && isAuth) {
+      // Restore auth session
+      _authService.restoreSession(userId, userPhone);
+      _isAuthenticated = true;
+
+      // Try to load from Firestore
+      final userData = await _firestoreService.getUser(userId);
+      if (userData != null) {
+        _user = userData;
+      } else {
+        // Fallback to local storage
+        final userJson = prefs.getString('user_data');
+        if (userJson != null) {
+          _user = UserModel.fromJson(json.decode(userJson));
+        }
+      }
+    } else {
+      // No session - load from local storage only
+      final userJson = prefs.getString('user_data');
+      if (userJson != null) {
+        _user = UserModel.fromJson(json.decode(userJson));
+      }
+      _isAuthenticated = isAuth;
     }
-    _isAuthenticated = isAuth;
+
     notifyListeners();
   }
 
-  // Save user data to local storage
+  // Save user data to Firestore and local storage
   Future<void> saveUserData() async {
+    final uid = _authService.currentUserId;
+
+    debugPrint('💾 saveUserData called');
+    debugPrint('🆔 User ID: $uid');
+    debugPrint('👤 User data: ${_user.toJson()}');
+
+    if (uid != null) {
+      debugPrint('🔥 Saving to Firestore with UID: $uid');
+      // Save to Firestore
+      await _firestoreService.saveUser(uid, _user);
+    } else {
+      debugPrint('⚠️ UID is null! Skipping Firestore save');
+    }
+
+    // Also save locally for offline support
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('user_data', json.encode(_user.toJson()));
     await prefs.setBool('is_authenticated', _isAuthenticated);
+
+    // Save session info
+    if (uid != null) {
+      await prefs.setString('user_id', uid);
+    }
+    if (_authService.currentPhone != null) {
+      await prefs.setString('user_phone', _authService.currentPhone!);
+    }
+
+    debugPrint('💿 Saved to local storage');
   }
 
   // Update user profile
@@ -72,6 +125,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<void> signOut() async {
+    await _authService.signOut();
     _isAuthenticated = false;
     _user = UserModel(name: '', phone: '');
     final prefs = await SharedPreferences.getInstance();
@@ -91,13 +145,16 @@ class UserProvider extends ChangeNotifier {
     String? photoPath,
     required AccountType accountType,
   }) async {
+    debugPrint('📱 Completing onboarding for: $name');
     _user = _user.copyWith(
       name: name,
       photoPath: photoPath,
       accountType: accountType,
       isOnboardingComplete: true,
     );
+    debugPrint('💾 Calling saveUserData...');
     await saveUserData();
+    debugPrint('✅ Onboarding complete!');
     notifyListeners();
   }
 

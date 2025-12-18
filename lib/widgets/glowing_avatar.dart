@@ -5,11 +5,7 @@ class GlowingAvatar extends StatefulWidget {
   final String? imagePath;
   final double size;
 
-  const GlowingAvatar({
-    super.key,
-    this.imagePath,
-    this.size = 64,
-  });
+  const GlowingAvatar({super.key, this.imagePath, this.size = 64});
 
   @override
   State<GlowingAvatar> createState() => _GlowingAvatarState();
@@ -28,9 +24,10 @@ class _GlowingAvatarState extends State<GlowingAvatar>
       vsync: this,
     )..repeat(reverse: true);
 
-    _animation = Tween<double>(begin: 5.0, end: 15.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: 5.0,
+      end: 15.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -65,11 +62,16 @@ class _GlowingAvatarState extends State<GlowingAvatar>
           child: CircleAvatar(
             radius: widget.size / 2,
             backgroundColor: Colors.grey[300],
-            backgroundImage: widget.imagePath != null && File(widget.imagePath!).existsSync()
+            backgroundImage:
+                widget.imagePath != null && File(widget.imagePath!).existsSync()
                 ? FileImage(File(widget.imagePath!))
                 : null,
             child: widget.imagePath == null
-                ? Icon(Icons.person, size: widget.size * 0.6, color: Colors.grey[600])
+                ? Icon(
+                    Icons.person,
+                    size: widget.size * 0.6,
+                    color: Colors.grey[600],
+                  )
                 : null,
           ),
         );

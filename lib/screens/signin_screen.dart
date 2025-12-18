@@ -15,7 +15,7 @@ class _SignInScreenState extends State<SignInScreen> {
   final _phoneController = TextEditingController();
   final _otpController = TextEditingController();
   final _authService = AuthService();
-  
+
   bool _isOTPSent = false;
   bool _isLoading = false;
 
@@ -60,7 +60,10 @@ class _SignInScreenState extends State<SignInScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final success = await _authService.verifyOTP(_otpController.text);
+      final success = await _authService.verifyOTP(
+        _otpController.text,
+        _phoneController.text,
+      );
       if (success && mounted) {
         // Update user provider
         final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -85,9 +88,9 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -109,13 +112,9 @@ class _SignInScreenState extends State<SignInScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // App logo/icon
-                  const Icon(
-                    Icons.format_quote,
-                    size: 80,
-                    color: Colors.white,
-                  ),
+                  const Icon(Icons.format_quote, size: 80, color: Colors.white),
                   const SizedBox(height: 16),
-                  
+
                   // App title
                   const Text(
                     'Quote Sharing',
@@ -129,10 +128,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   const Text(
                     'Personalize & Share Inspirational Quotes',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 16,
-                    ),
+                    style: TextStyle(color: Colors.white70, fontSize: 16),
                   ),
                   const SizedBox(height: 48),
 
@@ -166,7 +162,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             counterText: '',
                           ),
                         ),
-                        
+
                         if (_isOTPSent) ...[
                           const SizedBox(height: 16),
                           TextField(

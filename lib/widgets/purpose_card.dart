@@ -32,7 +32,7 @@ class PurposeCard extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: isSelected 
+              color: isSelected
                   ? const Color(0xFF6A1B9A).withValues(alpha: 0.2)
                   : Colors.black.withValues(alpha: 0.05),
               blurRadius: isSelected ? 15 : 10,
@@ -44,38 +44,40 @@ class PurposeCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: isSelected 
+                color: isSelected
                     ? const Color(0xFF6A1B9A).withValues(alpha: 0.1)
                     : Colors.grey[100],
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 icon,
-                size: 36,
+                size: 40,
                 color: isSelected ? const Color(0xFF6A1B9A) : Colors.grey[600],
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 12),
             Text(
               title,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: isSelected ? const Color(0xFF6A1B9A) : Colors.black87,
               ),
             ),
-            const SizedBox(height: 2),
-            Flexible(
+            const SizedBox(height: 6),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(
                 description,
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 11,
+                  fontSize: 13,
                   color: Colors.grey[600],
+                  height: 1.3,
                 ),
               ),
             ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import '../providers/user_provider.dart';
 import '../services/permission_service.dart';
 import 'upgrade_screen.dart';
@@ -13,11 +14,12 @@ class EditScreen extends StatefulWidget {
   State<EditScreen> createState() => _EditScreenState();
 }
 
-class _EditScreenState extends State<EditScreen> with SingleTickerProviderStateMixin {
+class _EditScreenState extends State<EditScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final _nameController = TextEditingController();
   final _permissionService = PermissionService();
-  
+
   bool _showDate = true;
   String? _photoPath;
 
@@ -25,7 +27,7 @@ class _EditScreenState extends State<EditScreen> with SingleTickerProviderStateM
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    
+
     // Load current user data
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     _nameController.text = userProvider.user.name;
@@ -43,9 +45,21 @@ class _EditScreenState extends State<EditScreen> with SingleTickerProviderStateM
   Future<void> _pickPhoto(ImageSource source) async {
     final file = await _permissionService.pickImage(source);
     if (file != null) {
-      setState(() {
-        _photoPath = file.path;
-      });
+      // Save to permanent storage
+      try {
+        final appDir = await getApplicationDocumentsDirectory();
+        final fileName = 'profile_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        final savedImage = await file.copy('${appDir.path}/$fileName');
+        
+        setState(() {
+          _photoPath = savedImage.path;
+        });
+      } catch (e) {
+        debugPrint('Error saving profile photo: $e');
+        setState(() {
+          _photoPath = file.path;
+        });
+      }
     }
   }
 
@@ -88,7 +102,7 @@ class _EditScreenState extends State<EditScreen> with SingleTickerProviderStateM
 
   void _saveChanges() {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    
+
     userProvider.updateUser(
       userProvider.user.copyWith(
         name: _nameController.text,
@@ -137,10 +151,7 @@ class _EditScreenState extends State<EditScreen> with SingleTickerProviderStateM
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                   ),
                 ],
               ),
@@ -167,7 +178,8 @@ class _EditScreenState extends State<EditScreen> with SingleTickerProviderStateM
                   CircleAvatar(
                     radius: 60,
                     backgroundColor: Colors.grey[300],
-                    backgroundImage: _photoPath != null && File(_photoPath!).existsSync()
+                    backgroundImage:
+                        _photoPath != null && File(_photoPath!).existsSync()
                         ? FileImage(File(_photoPath!))
                         : null,
                     child: _photoPath == null
@@ -224,10 +236,7 @@ class _EditScreenState extends State<EditScreen> with SingleTickerProviderStateM
                   children: [
                     Icon(Icons.calendar_today),
                     SizedBox(width: 16),
-                    Text(
-                      'Show Date on Quote',
-                      style: TextStyle(fontSize: 16),
-                    ),
+                    Text('Show Date on Quote', style: TextStyle(fontSize: 16)),
                   ],
                 ),
                 Switch(
@@ -247,10 +256,7 @@ class _EditScreenState extends State<EditScreen> with SingleTickerProviderStateM
           // Locked fields section
           const Text(
             'Premium Features',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
 
@@ -328,10 +334,7 @@ class _EditScreenState extends State<EditScreen> with SingleTickerProviderStateM
             ),
             child: const Text(
               'SAVE',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
         ),
